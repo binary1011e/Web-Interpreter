@@ -9,7 +9,7 @@ const App = () => {
   const [output, setOutput] = useState(null);
   const [language, setLanguage] = useState("BF");
  
-  // event handlers for the input
+  // event handlers for input
   const inputChangeHandler = (event) => {
     event.preventDefault();
     if (event.target.value === null || event.target.value === undefined) {
