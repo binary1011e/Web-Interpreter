@@ -21,7 +21,7 @@ public class Code {
         this.language = language;
     }
 
-    public String getLox() {
+    public String getLanguage() {
         return language;
     }
 

@@ -8,6 +8,7 @@ import java.util.Stack;
 class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     private final Interpreter interpreter;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
+    // Used to check for edge case where return is called without a function
     private FunctionType currentFunction = FunctionType.NONE;
 
     public Resolver(Interpreter interpreter) {
@@ -28,6 +29,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
+        // no variable edge case here.
         declare(stmt.name);
         define(stmt.name);
 
@@ -68,6 +70,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitVariableExpr(Expr.Variable expr) {
+        // Edge case: A variable is declared but called within its own initialization
         if (!scopes.isEmpty() && scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
             Lox.error(expr.name, "Can't read local variable in its own initializer.");
         }
@@ -75,13 +78,14 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         return null;
     }
 
-
+    // Visitor's pattern
     void resolve(List<Stmt> statements) {
         for (Stmt statement : statements) {
             resolve(statement);
         }
     }
 
+    // Overloaded resolves for stmt and expression
     private void resolve(Stmt stmt) {
         stmt.accept(this);
     }
@@ -90,7 +94,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         expr.accept(this);
     }
 
+    // Places the expression within the environment at its correct depth.
+    // When the interpreter reaches the variable expression statement, it has to find the environemnt where
+    // the variable is placed (which depth).
     private void resolveLocal(Expr expr, Token name) {
+        // Large to small or from global environemnt to the smallest scale
+        // only the variable closest to the variable expression changes
         for (int i = scopes.size() - 1; i >= 0; i--) {
             if (scopes.get(i).containsKey(name.lexeme)) {
                 interpreter.resolve(expr, scopes.size() - 1 - i);

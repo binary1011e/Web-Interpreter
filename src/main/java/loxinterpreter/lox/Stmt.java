@@ -44,16 +44,17 @@ abstract class Stmt {
         final Token name;
         final List<Token> params;
         final List<Stmt> body;
-
+        TokenType type;
        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitFunctionStmt(this);
         }
 
-        Function(Token name, List<Token> params, List<Stmt> body) {
+        Function(Token name, List<Token> params, List<Stmt> body, TokenType type) {
             this.name = name;
             this.params = params;
             this.body = body;
+            this.type = type;
         }
     }
     static class If extends Stmt {

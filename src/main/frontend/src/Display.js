@@ -5,6 +5,7 @@ export default function Display({output}) {
     }
     return (
         <div>
+            <p>Output</p>
             <h3 style={{whiteSpace: 'pre-line'}}>
                 {output.outputCode}
             </h3>

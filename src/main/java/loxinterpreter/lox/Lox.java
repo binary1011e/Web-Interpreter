@@ -29,10 +29,14 @@ public class Lox {
         List<Stmt> statements = parser.parse();
 
         if (hadError) return err;
+
+        // Resolves scoping issues
         Resolver resolver = new Resolver(interpreter);
         resolver.resolve(statements);
 
         if (hadError) return err;
+
+        // Simple type checker for the variables with a type + checks for type mismatches
         Checker checker = new Checker();
         checker.check(statements);
         if (hadError) return err;

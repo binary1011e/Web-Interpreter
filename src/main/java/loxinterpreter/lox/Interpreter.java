@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    // global environemnt for Lox
     final Environment globals = new Environment();
+
+    // Local environment
     private Environment environment = globals;
+    // Map associating each expression to which environment it is.
     private final Map<Expr, Integer> locals = new HashMap<>();
     private String output = "";
     public Interpreter() {
@@ -42,14 +46,17 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     // Execute Statement of code
+    // Visitor's pattern: Utilizes polymorphism to call the associating accept method for each different stmt
     private void execute(Stmt stmt) {
         stmt.accept(this);
     }
 
-    //
+    // Places the expression in the correct depth
     void resolve(Expr expr, int depth) {
         locals.put(expr, depth);
     }
+
+    // stringifies to allow for string num concatenation
     private String stringify(Object object) {
         if (object == null) return "nil";
 
@@ -81,6 +88,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             this.environment = previous;
         }
     }
+
     @Override
     public Object visitLiteralExpr(Expr.Literal expr) {
         return expr.value;
@@ -104,6 +112,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     public Object visitGroupingExpr(Expr.Grouping expr) {
         return evaluate(expr.expression);
     }
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }
@@ -205,6 +214,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if (operand instanceof Double) return;
         throw new RuntimeError(operator, "Operand must be a number.");
     }
+
     private boolean isTruthy(Object object) {
         if (object == null) return false;
         if (object instanceof Boolean) return (boolean)object;

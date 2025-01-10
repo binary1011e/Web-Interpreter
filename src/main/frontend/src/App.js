@@ -7,9 +7,17 @@ const App = () => {
   const [enteredInput, setEnteredInput] = useState("");
   const [enteredCode, setEnteredCode] = useState("");
   const [output, setOutput] = useState(null);
-  const [language, setLanguage] = useState("BF");
+  const [language, setLanguage] = useState("py");
+  const myDict = {
+    "py": "python",
+    "cpp": "cpp",
+    "js": "javascript",
+    "java": "java",
+    "cs": "csharp",
+    "go": "go",
+  };
  
-  // event handlers for the input
+  // event handlers for input
   const inputChangeHandler = (event) => {
     event.preventDefault();
     if (event.target.value === null || event.target.value === undefined) {
@@ -22,7 +30,7 @@ const App = () => {
 
   const languageChangeHandler = (event) => {
     event.preventDefault();
-    setLanguage(event.target.options[event.target.selectedIndex].text);
+    setLanguage(event.target.options[event.target.selectedIndex].value);
   };
 
   function handleEditorChange(value, event) {
@@ -71,38 +79,53 @@ const App = () => {
   };
  
   return (
-      <form onSubmit={submitHandler} class="horizontal container center-flex">
-        <div class='horizontal'>
-          <div class="vertical button-gap">
+    <form onSubmit={submitHandler} class="horizontal container center-flex">
+      <div class="vertical">
+        <div class="horizontal button-gap">
             <select id="ddlViewBy" onChange={languageChangeHandler}>
-              <option value="1">Lox</option>
-              <option value="2" selected="selected">BF</option>
+              <option value="py" selected="selected">Python</option>
+              <option value="Lox">Lox</option>
+              <option value="BF">BF</option>
+              <option value="java">Java</option>
+              <option value="cs">C#</option>
+              <option value="c">C</option>
+              <option value="cpp">C++</option>
+              <option value="js">JavaScript</option>
+              <option value="go">GoLang</option>
             </select>
             <button type="Submit">Run</button>
-            <div class='vertical overflow-hidden'>
-              <p>Code</p>
-              <Editor
-              height="60vh"
-              defaultLanguage="javascript"
-              defaultValue={enteredCode}
-              onChange={handleEditorChange}
-              onMount={handleEditorDidMount}
-              theme="my-theme"
-              />
+          </div>
+        <div class="horizontal space-between">
+          <div class="vertical overflow-hidden flex-2">
+            Code
+            <Editor
+            height="70vh"
+            language={language in myDict ? myDict[language] : ""}
+            defaultValue={enteredCode}
+            onChange={handleEditorChange}
+            onMount={handleEditorDidMount}
+            theme="my-theme"
+            options={{
+              fontSize: 12,
+            }}
+            />
+          </div>
+          <div class="vertical space-between flex-1">
+            <div class="vertical">
+              <label htmlFor="input">Input</label>
+              <textarea
+                id="input"
+                type="textarea"
+                class="flex-1"
+                value={enteredInput}
+                onChange={inputChangeHandler}
+              ></textarea>
             </div>
-          </div>
-          <div class='vertical space-between'>
-            <label htmlFor="input">Input</label>
-            <textarea
-              id="input"
-              type="textarea"
-              value={enteredInput}
-              onChange={inputChangeHandler}
-            ></textarea>
-            <Display output={output} />
-          </div>
+          <Display output={output} />
         </div>
-      </form>
+        </div>
+      </div>
+    </form>
   );
 };
  

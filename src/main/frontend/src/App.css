@@ -1,6 +1,5 @@
 * {
   box-sizing: border-box;
-  border: 1px solid red;
 }
 body {
   margin: 0;
@@ -45,7 +44,7 @@ button:active {
 }
 
 .button-gap {
-  gap: 10px;
+  gap: 380px;
 }
 
 .container {
@@ -64,7 +63,12 @@ button:active {
   display: flex;
   flex-direction: row;
 }
-
+.flex-1 {
+  flex: 1;
+}
+.flex-2 {
+  flex: 2;
+}
 .overflow-hidden {
   overflow: hidden;
 }

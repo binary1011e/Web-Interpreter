@@ -3,6 +3,8 @@ package loxinterpreter.lox;
 import java.util.HashMap;
 import java.util.Map;
 class Environment {
+    // Linked list-esque setup for environment. Each local environment links to the environment greater in scope
+    // This allows for variables outside of a scope to be updated and up to date.
     final Environment enclosing;
     private final Map<String, Object> values = new HashMap<>();
 
@@ -18,7 +20,6 @@ class Environment {
         return environment;
     }
     Object getAt(int distance, String name) {
-
         return ancestor(distance).values.get(name);
     }
 

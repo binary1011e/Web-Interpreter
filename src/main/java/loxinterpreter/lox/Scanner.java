@@ -102,6 +102,7 @@ class Scanner {
             }
         }
     }
+    // Implements block comments
     private void blockComment() {
         while(true) {
             char c = advance();
@@ -174,6 +175,7 @@ class Scanner {
         String value = source.substring(start + 1, current - 1);
         addToken(STRING, value);
     }
+
     private char peek() {
         if (isAtEnd()) return '\0';
         return source.charAt(current);
@@ -192,6 +194,7 @@ class Scanner {
     private void addToken(TokenType type) {
         addToken(type, null);
     }
+
     private void addToken(TokenType type, Object literal) {
         String text = source.substring(start, current);
         tokens.add(new Token(type, text, literal, line));

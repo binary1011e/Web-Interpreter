@@ -20,8 +20,7 @@ class Checker implements Expr.Visitor<TokenType>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
-
-        checkFunction(stmt, stmt.name.type);
+        checkFunction(stmt, stmt.type);
         return null;
     }
 
@@ -46,7 +45,7 @@ class Checker implements Expr.Visitor<TokenType>, Stmt.Visitor<Void> {
     public Void visitReturnStmt(Stmt.Return stmt) {
         if (stmt.value != null) {
             TokenType a = check(stmt.value);
-            if (currentFunction != null && a != currentFunction) {
+            if (currentFunction != FUN && a != currentFunction) {
                 Lox.error(-1, "Return stmt mismatch");
             }
         }
