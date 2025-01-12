@@ -117,6 +117,11 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         }
         resolve(function.body);
         endScope();
+        if (function.tests != null) {
+            beginScope();
+            resolve(function.tests);
+            endScope();
+        }
         currentFunction = enclosingFunction;
     }
 

@@ -41,12 +41,18 @@ public class Lox {
         checker.check(statements);
         if (hadError) return err;
         // Interpreter interprets the expression
-        return interpreter.interpret(statements);
+        String a = interpreter.interpret(statements);
+        if (hadRuntimeError) return err;
+        return a;
     }
 
     // Error reporting
     static void error(int line, String message) {
         report(line, "", message);
+    }
+
+    static void error(String message) {
+        report(-1, "", message);
     }
 
     // Error printing
@@ -66,6 +72,11 @@ public class Lox {
 
     //runTime error
     static void runtimeError(RuntimeError error) {
+        if (error.token == null) {
+            err = error.getMessage();
+            hadRuntimeError = true;
+            return;
+        }
         err = error.getMessage() + "\n[line " + error.token.line + "]";
         hadRuntimeError = true;
     }

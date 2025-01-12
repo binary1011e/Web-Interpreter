@@ -65,6 +65,9 @@ class Checker implements Expr.Visitor<TokenType>, Stmt.Visitor<Void> {
 
 
     void check(List<Stmt> statements) {
+        if (statements == null) {
+            return;
+        }
         for (Stmt statement : statements) {
             check(statement);
         }
@@ -84,6 +87,7 @@ class Checker implements Expr.Visitor<TokenType>, Stmt.Visitor<Void> {
         currentFunction = type;
         check(function.body);
         currentFunction = enclosingFunction;
+        check(function.tests);
     }
 
     @Override

@@ -32,6 +32,7 @@ class Scanner {
         keywords.put("this", THIS);
         keywords.put("true", TRUE);
         keywords.put("var", VAR);
+        keywords.put("test:", TEST);
         keywords.put("var:num", NUM);
         keywords.put(":", COLON);
         keywords.put("var:string", STR);

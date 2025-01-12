@@ -17,7 +17,7 @@ const App = () => {
     "go": "go",
   };
  
-  // event handlers for input
+  // event handlers for the input
   const inputChangeHandler = (event) => {
     event.preventDefault();
     if (event.target.value === null || event.target.value === undefined) {

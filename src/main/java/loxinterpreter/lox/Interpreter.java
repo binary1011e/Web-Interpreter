@@ -13,7 +13,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private Environment environment = globals;
     // Map associating each expression to which environment it is.
     private final Map<Expr, Integer> locals = new HashMap<>();
-    private String output = "";
+    private StringBuilder output = new StringBuilder();
+    int test = 1;
     public Interpreter() {
         // Define new function within Lox
         globals.define("clock", new LoxCallable() {
@@ -42,7 +43,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             Lox.runtimeError(error);
             return "-1";
         }
-        return output;
+        return output.toString();
     }
 
     // Execute Statement of code
@@ -89,6 +90,31 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
     }
 
+    void executeTests(List<Stmt> statements, Environment environment) {
+        Environment previous = this.environment;
+        try {
+            for(Stmt statement : statements) {
+                this.environment = (Environment)environment.clone();
+                if (!(statement instanceof Stmt.Expression)) {
+
+                    throw new RuntimeError("Tests must be expressions");
+                }
+                if (isTruthy(evaluate(((Stmt.Expression) statement).expression))) {
+                    output.append("Test ").append(test).append(" passed!").append("\n");
+                } else {
+                    output.append("Test ").append(test).append(" failed!").append("\n");
+                }
+                test++;
+                this.environment = previous;
+            }
+        } catch(Exception e) {
+            this.environment = previous;
+        }
+        finally {
+            this.environment = previous;
+        }
+    }
+
     @Override
     public Object visitLiteralExpr(Expr.Literal expr) {
         return expr.value;
@@ -127,6 +153,9 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     public Void visitFunctionStmt(Stmt.Function stmt) {
         LoxFunction function = new LoxFunction(stmt, environment);
         environment.define(stmt.name.lexeme, function);
+        if (stmt.tests != null) {
+            executeTests(stmt.tests, environment);
+        }
         return null;
     }
 
@@ -143,7 +172,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Void visitPrintStmt(Stmt.Print stmt) {
         Object value = evaluate(stmt.expression);
-        output += stringify(value) + "\n";
+        output.append(stringify(value)).append("\n");
         return null;
     }
     @Override

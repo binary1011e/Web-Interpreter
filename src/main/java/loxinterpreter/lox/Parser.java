@@ -86,6 +86,7 @@ class Parser {
         }
         return body;
     }
+
     private Stmt ifStatement() {
         consume(LEFT_PAREN, "Expect '(' after if.");
         Expr condition = expression();
@@ -165,9 +166,18 @@ class Parser {
 
         consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
         List<Stmt> body = block();
-
-        return new Stmt.Function(name, parameters, body, type.type);
+        List<Stmt> tests = null;
+        if (match(TEST)) {
+            tests = checkforTests();
+        }
+        return new Stmt.Function(name, parameters, body, type.type, tests);
     }
+
+    private List<Stmt> checkforTests() {
+        consume(LEFT_BRACE, "Expect '{' after test");
+        return block();
+    }
+
     private List<Stmt> block() {
         List<Stmt> statements = new ArrayList<>();
 
@@ -175,7 +185,7 @@ class Parser {
             statements.add(declaration());
         }
 
-        consume(RIGHT_BRACE, "Expect ')' after block.");
+        consume(RIGHT_BRACE, "Expect '}' after block.");
         return statements;
     }
 
