@@ -3,52 +3,32 @@ package aidanw.bf.interpreter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class CodeController {
 
     @Autowired
-    BFService bfService;
-    private Map<String, Code> db = new HashMap<>() {{
-        put("1", new Code("1", "<", "", "Lox"));
-    }};
-
-
-    @GetMapping("/code/")
-    public Collection<Code> get() {
-        return db.values();
-    }
-
-    @GetMapping("/code/{id}")
-    public Code get(@PathVariable String id) {
-        Code code = db.get(id);
-        if (code == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return db.get(id);
-    }
-
+    CodeRepo codeRepo;
+    @Autowired
+    UserRepo userRepo;
     @DeleteMapping("/code/{id}")
-    public void delete(@PathVariable String id) {
-        Code code = db.remove(id);
-        if (code == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<HttpStatus> delete(@PathVariable int id) {
+        codeRepo.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/code/")
-    public Code create(@RequestBody @Valid Code code) {
-        code.setId(UUID.randomUUID().toString());
+    @PostMapping("/code/{id}")
+    public ResponseEntity<Code> create(@RequestBody @Valid Code code, @PathVariable int id) {
         BFService.interpretCode(code);
+        code.setUser(userRepo.getReferenceById(id));
+        userRepo.getReferenceById(id).addCode(code);
+        codeRepo.saveAndFlush(code);
         System.out.println(code.getInputCode());
-        db.put(code.getId(), code);
-        return code;
+        return new ResponseEntity<>(code, HttpStatus.OK);
     }
 }

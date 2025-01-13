@@ -5,8 +5,10 @@ import Display from './Display';
 const App = () => {
   // defaults
   const [enteredInput, setEnteredInput] = useState("");
+  const [username, setUsername] = useState("");
   const [enteredCode, setEnteredCode] = useState("");
   const [output, setOutput] = useState(null);
+  const [user, setUser] = useState("");
   const [language, setLanguage] = useState("py");
   const myDict = {
     "py": "python",
@@ -56,11 +58,11 @@ const App = () => {
     const code = {
       input: enteredInput,
       inputCode: enteredCode,
-      language : language
+      language : language,
     };
     console.log(code);
     if (enteredCode != null) {
-      fetch("http://localhost:8080/code/", {
+      fetch("http://localhost:8080/code/" + user.id, {
       method: "POST",
       headers: {
         "Accept": "application/json",
@@ -77,7 +79,35 @@ const App = () => {
     .catch(error => console.error(error));
   }
   };
- 
+  function handle() {
+    const user = {
+      name: username
+    }
+    fetch("http://localhost:8080/User/", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(user),
+    }).then(function(response) {
+      console.log(response);
+      return response.json();
+    }).then(function(response) {
+      console.log(response);
+      setUser(response);
+    }).catch(error => console.error(error));
+  }
+  if (user == "") {
+    return (
+      <div>
+        <div>
+            <input onChange={(e) => {setUsername(e.target.value)}} />
+            <button onClick={handle}>Enter Username</button>
+        </div>
+      </div>
+    )
+  }
   return (
     <form onSubmit={submitHandler} class="horizontal container center-flex">
       <div class="vertical">
