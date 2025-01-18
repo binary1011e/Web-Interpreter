@@ -22,12 +22,19 @@ public class CodeController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/code/{id}")
-    public ResponseEntity<Code> create(@RequestBody @Valid Code code, @PathVariable int id) {
+    @PostMapping("/save/{id}")
+    public ResponseEntity<Code> save(@RequestBody @Valid Code code, @PathVariable int id) {
         BFService.interpretCode(code);
         code.setUser(userRepo.getReferenceById(id));
         userRepo.getReferenceById(id).addCode(code);
         codeRepo.saveAndFlush(code);
+        System.out.println(code.getInputCode());
+        return new ResponseEntity<>(code, HttpStatus.OK);
+    }
+
+    @PostMapping("/code/{id}")
+    public ResponseEntity<Code> create(@RequestBody @Valid Code code, @PathVariable int id) {
+        BFService.interpretCode(code);
         System.out.println(code.getInputCode());
         return new ResponseEntity<>(code, HttpStatus.OK);
     }

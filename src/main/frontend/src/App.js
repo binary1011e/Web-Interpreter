@@ -2,6 +2,7 @@ import './App.css';
 import React, { useState } from "react";
 import Editor from '@monaco-editor/react';
 import Display from './Display';
+import Save from './Save';
 const App = () => {
   // defaults
   const [enteredInput, setEnteredInput] = useState("");
@@ -19,7 +20,7 @@ const App = () => {
     "go": "go",
   };
  
-  // event handlers for the input
+  // event handler for input
   const inputChangeHandler = (event) => {
     event.preventDefault();
     if (event.target.value === null || event.target.value === undefined) {
@@ -30,15 +31,18 @@ const App = () => {
     }
   };
 
+  // event handler for changing language of the editor and interpreter
   const languageChangeHandler = (event) => {
     event.preventDefault();
     setLanguage(event.target.options[event.target.selectedIndex].value);
   };
 
+  // event handler for the code typed in the editor
   function handleEditorChange(value, event) {
     setEnteredCode(value);
   }
 
+  // mounting the editor and setting the theme
   function handleEditorDidMount(editor, monaco) {
     monaco.editor.defineTheme('my-theme', {
       base: 'vs',
@@ -79,6 +83,7 @@ const App = () => {
     .catch(error => console.error(error));
   }
   };
+
   function handle() {
     const user = {
       name: username
@@ -98,13 +103,12 @@ const App = () => {
       setUser(response);
     }).catch(error => console.error(error));
   }
+
   if (user == "") {
     return (
       <div>
-        <div>
-            <input onChange={(e) => {setUsername(e.target.value)}} />
-            <button onClick={handle}>Enter Username</button>
-        </div>
+        <input onChange={(e) => {setUsername(e.target.value)}} />
+        <button onClick={handle}>Enter Username</button>
       </div>
     )
   }
@@ -151,8 +155,16 @@ const App = () => {
                 onChange={inputChangeHandler}
               ></textarea>
             </div>
-          <Display output={output} />
-        </div>
+            <Display output={output} />
+            <Save 
+            code={{
+              input: enteredInput,
+              inputCode: enteredCode,
+              language : language,
+            }}
+            userId={user.id}
+            />
+          </div>
         </div>
       </div>
     </form>
